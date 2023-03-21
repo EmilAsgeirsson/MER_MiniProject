@@ -1,13 +1,32 @@
 import tkinter as tk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
-import matplotlib.image as mpimg
 import csv
 from PIL import Image, ImageTk
+from Encoder.scripts.encoder import Encoder
+from time import sleep
+import sys
+import signal
+import atexit
 
-
-# Define the update interval in seconds
+# Define encoder
+encoder = Encoder(port="COM3")
+# Define the update interval in milliseconds
 UPDATE_INTERVAL = 1
+# data list
+DATA = []
+
+def signal_handler():
+    '''
+    Signal handler. Detects program interrupts and stops motors before halting program.
+    '''
+    encoder.end_thread()
+    print("thread ended")    
+    sleep(1)
+    sys.exit(1)
+
+# Set up signal handler
+atexit.register(signal_handler)
 
 # Create the Tkinter GUI window
 root = tk.Tk()
@@ -41,34 +60,41 @@ line, = ax.plot([], [])
 ax.set_xlabel('Time (s)')
 ax.set_ylabel('Sensor Reading')
 ax.set_title('Sensor Data')
+ax.set_yticks([0, 45, 90, 135, 180, 225, 270])
+y_min = -30#min(y_values)
+y_max = 300#max(y_values)
+ax.set_ylim(y_min, y_max)
 
 # Create a canvas to display the Matplotlib figure
 canvas_fig1 = FigureCanvasTkAgg(fig, master=root)
 canvas_fig1.draw()
 canvas_fig1.get_tk_widget().place(x=120, y=120)
 
+# Start thread to read data
+encoder.start_thread()
+count = 0
+
 # Read data from CSV file
 def read_data():
-    with open('sensor_data.csv', 'r') as file:
-        reader = csv.reader(file)
-        data = list(reader)
-    x_values = [float(row[0]) for row in data]
-    y_values = [float(row[1]) for row in data]
+    #with open('sensor_data.csv', 'r') as file:
+    #    reader = csv.reader(file)
+    #    data = list(reader)
+    DATA.append(encoder.get_data()[0])
+    x_values = [float(row["Time"]) for row in DATA]
+    x_values = range(len(x_values))
+    y_values = [float(row["A2"]) for row in DATA]
     size = int(slider.get())
     line.set_xdata(x_values)
     line.set_ydata(y_values)
     
+    #print(f'time {y_values}')
+    #print('xvalues', x_values)
     # set the limits of the x-axis
-    print('size: ',size)
-    x_min = (100-size)
-    print('x_min', x_min)
-    x_max = 100
-    print('x_max',x_max)
+    x_min = (len(x_values)-size)
+    if x_min < 0:
+        x_min = 0
+    x_max = len(x_values)
     ax.set_xlim(x_min, x_max)
-    
-    y_min = min(y_values)
-    y_max = max(y_values)
-    ax.set_ylim(y_min, y_max)
 
     ax.autoscale_view(True,True,True)
     canvas_fig1.draw()
@@ -76,7 +102,7 @@ def read_data():
 # Update the data at the specified interval
 def update_data():
     read_data()
-    root.after(UPDATE_INTERVAL * 100, update_data)
+    root.after(UPDATE_INTERVAL, update_data)
 
 # Create a button to manually update the data
 #def update_button():
@@ -87,8 +113,8 @@ def update_data():
 #button.place(x=15, y=120)
 
 # create a slider widget to adjust the point size
-slider = tk.Scale(master=root, from_=1, to=100, orient=tk.HORIZONTAL)
-slider.set(100) # set initial value
+slider = tk.Scale(master=root, from_=1, to=1000, orient=tk.HORIZONTAL)
+slider.set(1000) # set initial value
 slider.place(x=700, y=200)
 
 # Start the update loop
