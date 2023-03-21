@@ -1,7 +1,13 @@
 from Encoder.scripts.encoder import Encoder
 from time import sleep
 
-encoder = Encoder(port="COM3")
+#encoder = Encoder(port="COM3")
+ports = Encoder.check_for_COM()
+print(ports)
+
+
+
+"""
 encoder.start_thread()
 count = 0
 while True:
@@ -12,3 +18,4 @@ while True:
     sleep(1)
 
 encoder.end_thread()
+"""

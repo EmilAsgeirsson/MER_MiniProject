@@ -2,6 +2,7 @@ from time import sleep
 from threading import Thread, Lock
 from time import time
 from serial import Serial
+import serial.tools.list_ports as port_list
 
 
 class Encoder:
@@ -13,6 +14,12 @@ class Encoder:
             "lock": Lock()
         }
         self.port = port
+
+    def check_for_COM():
+        ports = list(port_list.comports())
+        for port in ports:
+            print(f"{port}")
+        return ports
 
     def read_serial(self) -> None:
         with Serial(port=self.port, baudrate=115200, timeout=1) as serial:

@@ -9,6 +9,11 @@ import sys
 import signal
 import atexit
 
+# Check if any ports is installed:
+ports = Encoder.check_for_COM()
+if len(ports) == 0:
+    sys.exit(1)
+    
 # Define encoder
 encoder = Encoder(port="COM3")
 # Define the update interval in milliseconds
