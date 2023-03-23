@@ -10,9 +10,9 @@ import signal
 import atexit
 
 # Check if any ports is installed:
-ports = Encoder.check_for_COM()
-if len(ports) == 0:
-    sys.exit(1)
+#ports = Encoder.check_for_COM()
+#if len(ports) == 0:
+#    sys.exit(1)
     
 # Define encoder
 encoder = Encoder(port="COM3")
@@ -110,12 +110,12 @@ def update_data():
     root.after(UPDATE_INTERVAL, update_data)
 
 # Create a button to manually update the data
-#def update_button():
-    #read_data()
+def update_button():
+    run_sensor = not run_sensor
 
 # Create a button widget
-#button = tk.Button(master=root, text="Update Data", command=update_button)
-#button.place(x=15, y=120)
+button = tk.Button(master=root, text="Update Data", command=update_button)
+button.place(x=15, y=120)
 
 # create a slider widget to adjust the point size
 slider = tk.Scale(master=root, from_=1, to=1000, orient=tk.HORIZONTAL)
@@ -123,6 +123,7 @@ slider.set(1000) # set initial value
 slider.place(x=700, y=200)
 
 # Start the update loop
+
 update_data()
 
 # Run the Tkinter event loop

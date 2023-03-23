@@ -2,8 +2,7 @@ from Encoder.scripts.encoder import Encoder
 from time import sleep
 
 #encoder = Encoder(port="COM3")
-ports = Encoder.check_for_COM()
-print(ports)
+
 
 
 
