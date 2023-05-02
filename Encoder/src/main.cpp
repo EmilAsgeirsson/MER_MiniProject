@@ -24,14 +24,14 @@ constexpr uint8_t decimals = 2;
 void loop()
 {
   // Read the analog values
-  const float_t value_a0 = analogRead(PIN_A0);
-  const float_t value_a1 = analogRead(PIN_A1);
-  const float_t value_a2 = analogRead(PIN_A2);
+  const float_t value_a0 = analogRead(PIN_A0); // Pressure
+  const float_t value_a1 = analogRead(PIN_A1); // Encoder 1
+  const float_t value_a2 = analogRead(PIN_A2); // Encoder 2
 
   // Calculate the values
   const float_t bar = (value_a0 > 101) ? 0.0131F * value_a0 - 1.326 : 0.0F;
   const float_t angle_1 = value_a1 * to_angle;
-  const float_t angle_2 = value_a2 * to_angle;
+  const float_t angle_2 = value_a2 * to_angle; 
 
   // Print the values
   Serial.print(String(bar, decimals) + ',' +
