@@ -34,16 +34,14 @@ def calculate_force_and_power(theta, pressure, bBar): # rad
     
     """this function calculates the force and power applied on the beam
     Args:
-        theta (float): angle of the beam
-        pressure (float): pressure of the piston
+        theta (float): angle of the beam    [degrees]
+        pressure (float): pressure of the piston    [bar]
         bBar (bool): if pressure is in bar set to True, else False
 
     Returns:
         float: force in Newtons
-        float: power in Watts
     """
     force = 0.0
-    power = 0.0
 
     # Calculate Theta 3
     theta2 = 180 - theta
@@ -53,8 +51,36 @@ def calculate_force_and_power(theta, pressure, bBar): # rad
     
     f_p = calculate_piston_force(pressure, bBar)
     force  = (f_p * L2* np.sin(theta3)) / (L_Beam *np.sin(theta))
-    power = f_p * np.sqrt(x_sq)
-    return force, power 
+
+    return force 
+
+def calc_power(theta, theta_prev, time, pressure, bBar):
+    
+    """this function calculates the power applied on the beam
+    Args:
+        theta (float): angle of the[degrees]
+        theta_prev (float): previous angle of the beam [degrees]
+        time (float): time between the two angles   [seconds]
+        pressure (float): pressure of the piston [bar]
+        bBar (bool): if pressure is in bar set to True, else False [bool]
+        
+        Returns:
+        float: power in Watts
+    """
+
+    power = 0.0
+    theta2 = 180 - theta
+    x = np.sqrt(L2**2 + L4**2 - 2*L2*L4*np.cos(theta2))
+
+    theta2_prev = 180 - theta_prev
+    x_prev = np.sqrt(L2**2 + L4**2 - 2*L2*L4*np.cos(theta2_prev))
+
+    delta_x = x - x_prev
+    f_p = calculate_piston_force(pressure, bBar)
+
+    power = (f_p * delta_x)/time # change in distance * force / dt
+
+    return power
 
 
 if __name__ == '__main__':
