@@ -65,10 +65,12 @@ def calc_power(theta, theta_prev, time, pressure, bBar):
         bBar (bool): if pressure is in bar set to True, else False [bool]
         
         Returns:
+        folat: work in Joules
         float: power in Watts
     """
 
     power = 0.0
+    work = 0.0
     theta2 = 180 - theta
     x = np.sqrt(L2**2 + L4**2 - 2*L2*L4*np.cos(theta2))
 
@@ -77,16 +79,23 @@ def calc_power(theta, theta_prev, time, pressure, bBar):
 
     delta_x = x - x_prev
     f_p = calculate_piston_force(pressure, bBar)
+    
+    work = f_p * delta_x
+    power = work/time # Watts
 
-    power = (f_p * delta_x)/time # change in distance * force / dt
-
-    return power
+    return work, power
 
 
 if __name__ == '__main__':
 
-    angle = 90
-
-    force, power = calculate_force_and_power(angle, 6, True)
+    angle = 4
+    prev_angle = 1
+    pressure = 6
+    dt = 0.01
+    force = calculate_force_and_power(angle, pressure, True)
+    work, power = calc_power(angle, prev_angle, dt, pressure, True)
+    print("Angle: ", angle, "degrees")
     print("Force: ", force, "N")
+    print("Work: ", work, "J")
+    print("Power: ", power, "W")
 
