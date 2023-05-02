@@ -30,9 +30,9 @@ def calculate_piston_force(pressure = 6, bBar= True):
     return force
 
 
-def calculate_force(theta, pressure, bBar): # rad
+def calculate_force_and_power(theta, pressure, bBar): # rad
     
-    """this function calculates that applied on the beam
+    """this function calculates the force and power applied on the beam
     Args:
         theta (float): angle of the beam
         pressure (float): pressure of the piston
@@ -40,8 +40,10 @@ def calculate_force(theta, pressure, bBar): # rad
 
     Returns:
         float: force in Newtons
+        float: power in Watts
     """
     force = 0.0
+    power = 0.0
 
     # Calculate Theta 3
     theta2 = 180 - theta
@@ -51,14 +53,14 @@ def calculate_force(theta, pressure, bBar): # rad
     
     f_p = calculate_piston_force(pressure, bBar)
     force  = (f_p * L2* np.sin(theta3)) / (L_Beam *np.sin(theta))
-
-    return force 
+    power = f_p * np.sqrt(x_sq)
+    return force, power 
 
 
 if __name__ == '__main__':
 
     angle = 90
 
-    force = calculate_force(angle, 6, True)
+    force, power = calculate_force_and_power(angle, 6, True)
     print("Force: ", force, "N")
 
