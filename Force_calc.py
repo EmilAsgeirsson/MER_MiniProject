@@ -1,29 +1,37 @@
 import numpy as np
 
 L4 = 0.389 # m
-L3 = 0.422 # m
 L2 = 0.524 # m
 L_Beam = 0.755 # m
 
-
+def deg_to_rad(deg):
+    return deg * np.pi / 180
 
 def calculate_piston_area(diam = 40):#mm
-    '''
-    Calculate the area of the piston
-    diam: mm
-    return: m^2
-    '''
+    """Calculates the area of the piston
+
+    Args:
+        diam (int, optional): _description_. Defaults to 40.
+
+    Returns:
+        folat: m^2	
+    """
+    diam = diam/ 1000
     areal = np.pi * (diam/2)*(diam/2)
-    return areal/1000 # m^2 
+    return areal # m^2 
 
 def calculate_piston_force(pressure = 6, bBar= True): 
-    '''
-    Calculate the force of the piston
-    pressure: Pascal, if bBar = True, then bar
-    return: Newton
-    '''
+    """this function calculates the force applied on the piston
+    Args:
+        - pressure (float): pressure of the piston    [bar]
+        - bBar (bool): if pressure is in bar set to True, else pascale
+        
+        Returns:
+        float: force in [N]
+        """
+    force = 0.0
     if bBar:
-        pressure = pressure * 100000
+        pressure = pressure* 100000
 
     area = calculate_piston_area()
     force = area * pressure
@@ -44,14 +52,17 @@ def calculate_force(theta, pressure, bBar): # rad
     force = 0.0
 
     # Calculate Theta 3
-    theta2 = 180 - theta
+    theta = deg_to_rad(theta)
+    theta2 = np.pi - theta
     x_sq = L2**2 + L4**2 - 2*L2*L4*np.cos(theta2)
     theta3 = (L4**2 -x_sq -L2**2)/(-2*L2*np.sqrt(x_sq))
     theta3 = np.arccos(theta3)
     
     f_p = calculate_piston_force(pressure, bBar)
+    
     force  = (f_p * L2* np.sin(theta3)) / (L_Beam *np.sin(theta))
-
+    print("theta3: ", theta3)
+    print("angle, theta3, force: ", angle, theta3, force)
     return force 
 
 def calc_power(theta, theta_prev, time, pressure, bBar):
@@ -71,7 +82,7 @@ def calc_power(theta, theta_prev, time, pressure, bBar):
 
     power = 0.0
     work = 0.0
-    theta2 = 180 - theta
+    theta2 = np.pi - deg_to_rad(theta)
     x = np.sqrt(L2**2 + L4**2 - 2*L2*L4*np.cos(theta2))
 
     theta2_prev = 180 - theta_prev
@@ -95,7 +106,8 @@ if __name__ == '__main__':
     
     force = calculate_force(angle, pressure, True)
     work, power = calc_power(angle, prev_angle, dt, pressure, True)
-    print("Angle: ", angle, "degrees")
+    
+ 
     #print("Force: ", force, "N")
     #print("Work: ", work, "J")
     #print("Power: ", power, "W")
