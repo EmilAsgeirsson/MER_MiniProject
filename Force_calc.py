@@ -83,15 +83,13 @@ def calc_power(theta, theta_prev, time, pressure, bBar):
 
     power = 0.0
     work = 0.0
-    theta = np.deg2rad(theta)
     theta2 = np.pi - np.deg2rad(theta)
     x = np.sqrt(L2**2 + L4**2 - 2*L2*L4*np.cos(theta2))
 
-    theta_prev = deg_to_rad(theta_prev)
-    theta2_prev = np.pi - theta_prev
+    theta2_prev = 180 - theta_prev
     x_prev = np.sqrt(L2**2 + L4**2 - 2*L2*L4*np.cos(theta2_prev))
 
-    delta_x =  x_prev -x
+    delta_x = x - x_prev
     f_p = calculate_piston_force(pressure, bBar)
     
     work = f_p * delta_x
@@ -108,38 +106,12 @@ if __name__ == '__main__':
     angle = 4
     prev_angle = 1
     pressure = 6
-    dt = 2/50   
+    dt = 0.01
     
     force = calculate_force(angle, pressure, True)
     work, power = calc_power(angle, prev_angle, dt, pressure, True)
     
-    force_list = []
-    power_list = []
-    work_list = []
-    prev_angle = 69
-    for angle in range(70, 120):
-        force = calculate_force(angle, pressure, True)
-        work, power = calc_power(angle, prev_angle, dt, pressure, True)
-        work_list.append(work)
-        power_list.append(power)
-        force_list.append(force)
-        prev_angle = angle
-
-
-    import matplotlib.pyplot as plt
-    # three subplots sharing both x/y axes
-    f, (ax1, ax2, ax3) = plt.subplots(3, sharex=True, sharey=False)
-    ax1.plot(force_list)
-    ax1.set_title('Force')
-    ax2.plot(work_list)
-    ax2.set_title('Work')
-    ax3.plot(power_list)
-    ax3.set_title('Power')
-    plt.xlabel('Angle [degrees]')
-    
-    plt.show()
-
-
+ 
     #print("Force: ", force, "N")
     #print("Work: ", work, "J")
     #print("Power: ", power, "W")
