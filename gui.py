@@ -11,6 +11,7 @@ import signal
 import math
 import atexit
 
+## ADD POWER AS GRAPH OR JUST NUMBER?
 BOOL_ENCODER = False
 
 if BOOL_ENCODER:
