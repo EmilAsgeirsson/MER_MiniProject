@@ -30,13 +30,13 @@ def calculate_piston_force(pressure = 6, bBar= True):
     return force
 
 
-def calculate_force_and_power(theta, pressure, bBar): # rad
+def calculate_force(theta, pressure, bBar): # rad
     
     """this function calculates the force and power applied on the beam
     Args:
-        theta (float): angle of the beam    [degrees]
-        pressure (float): pressure of the piston    [bar]
-        bBar (bool): if pressure is in bar set to True, else False
+        - theta (float): angle of the beam    [degrees]
+        - pressure (float): pressure of the piston    [bar]
+        - bBar (bool): if pressure is in bar set to True, else False
 
     Returns:
         float: force in Newtons
@@ -58,11 +58,11 @@ def calc_power(theta, theta_prev, time, pressure, bBar):
     
     """this function calculates the power applied on the beam
     Args:
-        theta (float): angle of the[degrees]
-        theta_prev (float): previous angle of the beam [degrees]
-        time (float): time between the two angles   [seconds]
-        pressure (float): pressure of the piston [bar]
-        bBar (bool): if pressure is in bar set to True, else False [bool]
+        - theta (float): angle of the[degrees]
+        - theta_prev (float): previous angle of the beam [degrees]
+        - time (float): time between the two angles   [seconds]
+        - pressure (float): pressure of the piston [bar]
+        - bBar (bool): if pressure is in bar set to True, else False [bool]
         
         Returns:
         folat: work in Joules
@@ -93,7 +93,7 @@ if __name__ == '__main__':
     pressure = 6
     dt = 0.01
     
-    force = calculate_force_and_power(angle, pressure, True)
+    force = calculate_force(angle, pressure, True)
     work, power = calc_power(angle, prev_angle, dt, pressure, True)
     print("Angle: ", angle, "degrees")
     #print("Force: ", force, "N")
