@@ -1,9 +1,9 @@
 import numpy as np
 
-L4 = 0.2 # m
-L3 = 0.2 # m
-L2 = 0.2 # m
-L_Beam = 0.9 # m
+L4 = 0.389 # m
+L3 = 0.422 # m
+L2 = 0.524 # m
+L_Beam = 0.755 # m
 
 
 
