@@ -26,29 +26,28 @@ class Encoder:
             serial.flushInput()
             # Wait for system to start
             sleep(2)
+            start_time  = time()
+            """
             try:
                 line: str = serial.readline().decode()[0:-1]
                 assert (
                     line == "System ready"), f"Expected 'System ready', got '{line}'"
             except:
                 print('Failed to initialize encoder')
-                exit(1)
-
+                #exit(1)
+            """
             # Run until kill signal
             while self.thread["run_flag"]:
-                # Clear the read buffer
-                serial.flushInput()
-
                 # Read from the device
                 line: str = serial.readline().decode()
-
+                
                 try:
                     # Split the values in substrings
                     values_str: str = line.split(",")
 
                     # Create a dict
                     values: dict = {
-                        "Time": time(),
+                        "Time": time()-start_time,
                         "A0": float(values_str[0]), # Analog 0
                         "A1": float(values_str[1]), # Analog 1
                         "A2": float(values_str[2])  # Analog 2

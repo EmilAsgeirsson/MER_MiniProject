@@ -50,9 +50,8 @@ def calculate_force(theta, pressure, bBar): # rad
         float: force in Newtons
     """
     force = 0.0
-
     # Calculate Theta 3
-    theta = deg_to_rad(theta)
+    theta = np.deg2rad(theta)
     theta2 = np.pi - theta
     x_sq = L2**2 + L4**2 - 2*L2*L4*np.cos(theta2)
     theta3 = (L4**2 -x_sq -L2**2)/(-2*L2*np.sqrt(x_sq))
@@ -60,9 +59,11 @@ def calculate_force(theta, pressure, bBar): # rad
     
     f_p = calculate_piston_force(pressure, bBar)
     
-    force  = (f_p * L2* np.sin(theta3)) / (L_Beam *np.sin(theta))
-    print("theta3: ", theta3)
-    print("angle, theta3, force: ", angle, theta3, force)
+    if theta3 == 0:
+        force = 0.0
+    else:
+        force  = (f_p * L2* np.sin(theta3)) / (L_Beam *np.sin(theta))
+    
     return force 
 
 def calc_power(theta, theta_prev, time, pressure, bBar):
@@ -82,7 +83,7 @@ def calc_power(theta, theta_prev, time, pressure, bBar):
 
     power = 0.0
     work = 0.0
-    theta2 = np.pi - deg_to_rad(theta)
+    theta2 = np.pi - np.deg2rad(theta)
     x = np.sqrt(L2**2 + L4**2 - 2*L2*L4*np.cos(theta2))
 
     theta2_prev = 180 - theta_prev
@@ -92,7 +93,10 @@ def calc_power(theta, theta_prev, time, pressure, bBar):
     f_p = calculate_piston_force(pressure, bBar)
     
     work = f_p * delta_x
-    power = work/time # Watts
+    try:
+        power = work/time # Watts
+    except:
+        power = 0.0
 
     return work, power
 
