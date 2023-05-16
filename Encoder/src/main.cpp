@@ -14,7 +14,7 @@ void setup()
   pinMode(PIN_A1, INPUT);
   pinMode(PIN_A2, INPUT);
 
-  Serial.begin(9600);
+  Serial.begin(115200);
   Serial.print("System ready\n");
 }
 
