@@ -65,8 +65,8 @@ def calc_power(theta, theta_prev, time, pressure, bBar):
         - bBar (bool): if pressure is in bar set to True, else False [bool]
         
         Returns:
-        folat: work in Joules
-        float: power in Watts
+        float: work in [Joules]
+        float: power in [Watts]
     """
 
     power = 0.0
