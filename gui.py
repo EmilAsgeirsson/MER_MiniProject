@@ -4,16 +4,18 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 import csv
 from PIL import Image, ImageTk
-from Encoder.scripts.encoder import Encoder
 from time import sleep
 import sys
 import signal
 import math
 import atexit
+import Force_calc
 
+## ADD POWER AS GRAPH OR JUST NUMBER?
 BOOL_ENCODER = False
 
 if BOOL_ENCODER:
+    from Encoder.scripts.encoder import Encoder
 # Check if any ports is installed:
     ports = Encoder.check_for_COM()
     if len(ports) == 0:
@@ -50,20 +52,23 @@ root.configure(bg='#FFFFFF')
 # Create canvas to make distinct cololors
 canvas_side = tk.Canvas(master=root, width=100, height=1080, bg='#365274', borderwidth=0, highlightthickness=0)
 canvas_top = tk.Canvas(master=root, width=1920, height=100, bg='#18315A', borderwidth=0, highlightthickness=0)
+canvas_topleft = tk.Canvas(master=root, width=100, height=100, bg='#FFFFFF', borderwidth=0, highlightthickness=0)
 canvas_side.place(x=0,y=0)
 canvas_top.place(x=0,y=0)
+canvas_topleft.place(x=0,y=0)
 
 # Add logo
 # Load the image file using Pillow
-pil_image = Image.open("1483-0.png")
-resize = pil_image.resize([95,95])
+pil_image = Image.open("SDU_BLACK_RGB_png.png")
+resize = pil_image.resize([90,25])
+#827x221
 # Convert the PIL Image object to a Tkinter PhotoImage object
 tk_image = ImageTk.PhotoImage(resize)
 
 # Add the image to the canvas at position (0, 0)
-canvas_logo = tk.Canvas(master=root, width=95, height=95)
-canvas_logo.create_image(0, 0, anchor=tk.NW, image=tk_image)
-canvas_logo.place(x=0,y=0)
+canvas_logo = tk.Canvas(master=root, width=95, height=25, bg='#FFFFFF', borderwidth=0, highlightthickness=0)
+canvas_logo.create_image(5, 0, anchor=tk.NW, image=tk_image)
+canvas_logo.place(x=0,y=37)
 
 ########### SENSOR PLOT ###########
 
@@ -129,10 +134,10 @@ def read_data():
         DATA.append(encoder.get_data()[0])
         x_values = [float(row["Time"]) for row in DATA]
         x_values = range(len(x_values))
-        y_values = [float(row["A2"]) for row in DATA]
+        y_values_senser_ang = [float(row["A2"]) for row in DATA]
         size = int(slider.get())
         line_ang_sens.set_xdata(x_values)
-        line_ang_sens.set_ydata(y_values)
+        line_ang_sens.set_ydata(y_values_senser_ang)
     else:
         with open('curve_data.csv', 'r') as file:
             reader = csv.reader(file)
@@ -140,10 +145,10 @@ def read_data():
 
         ##### Sensor data #####
         x_values = [float(row[0]) for row in data]
-        y_values = [float(row[1]) for row in data]
+        y_values_senser_ang = [float(row[1]) for row in data]
         size = int(slider.get())
         line_ang_sens.set_xdata(x_values)
-        line_ang_sens.set_ydata(y_values)
+        line_ang_sens.set_ydata(y_values_senser_ang)
 
         ##### Stroke data #####
         length_rod = 800 # mm
@@ -153,6 +158,7 @@ def read_data():
 
         ##### Force data #####
         y_values_force = [float(row[2]) for row in data]
+        #Force_calc.calculate_force_and_power(y_values_senser_ang, )
         line_force.set_xdata(x_values)
         line_force.set_ydata(y_values_force)
     
