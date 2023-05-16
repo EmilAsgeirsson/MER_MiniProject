@@ -92,10 +92,11 @@ if __name__ == '__main__':
     prev_angle = 1
     pressure = 6
     dt = 0.01
+    
     force = calculate_force_and_power(angle, pressure, True)
     work, power = calc_power(angle, prev_angle, dt, pressure, True)
     print("Angle: ", angle, "degrees")
-    print("Force: ", force, "N")
-    print("Work: ", work, "J")
-    print("Power: ", power, "W")
+    #print("Force: ", force, "N")
+    #print("Work: ", work, "J")
+    #print("Power: ", power, "W")
 
