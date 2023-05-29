@@ -11,7 +11,18 @@ import math
 import atexit
 import Force_calc
 from Encoder.scripts.encoder import Encoder
-## ADD POWER AS GRAPH OR JUST NUMBER?
+
+
+################ HOW TO RUN ################
+
+# 1. Insert the Arduino USB in the laptop
+# 2. Find the COM port of the Arduino
+# 3. Ensure BOOL_ENCODER is set to True
+# 4. Run the program
+
+############################################
+
+
 BOOL_ENCODER = True
 
 if BOOL_ENCODER:
@@ -96,9 +107,9 @@ ax_force.set_xlabel('Time (s)')
 ax_force.set_ylabel('Force (N)')
 ax_force.set_title('Force')
 ax_force.grid(True)
-ax_force.set_yticks([50 * 1 * i for i in range(5)])
+ax_force.set_yticks([50 * 1 * i for i in range(10)])
 y_min = 0
-y_max = 250
+y_max = 500
 ax_force.set_ylim(y_min, y_max)
 
 # Create a canvas to display the Matplotlib figure
