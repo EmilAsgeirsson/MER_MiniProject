@@ -72,13 +72,14 @@ canvas_logo.place(x=0,y=37)
 fig_ang_sens = Figure(figsize=(6, 4), dpi=100)
 ax_ang_sens = fig_ang_sens.add_subplot(111)
 line_ang_sens, = ax_ang_sens.plot([], [], label='Angle')
-line_pres_sens, = ax_ang_sens.plot([], [], label='PSI')
+#line_pres_sens, = ax_ang_sens.plot([], [], label='PSI')
 ax_ang_sens.set_xlabel('Time (s)')
 ax_ang_sens.set_ylabel('Angle (deg)')
 ax_ang_sens.set_title('Angle Sensor Data')
-ax_ang_sens.set_yticks([10 * 1 * i for i in range(10)])
-y_min = 0
-y_max = 100
+ax_ang_sens.set_yticks([10 * 1 * i for i in range(5, 13, 1)])
+ax_ang_sens.grid(True)
+y_min = 50
+y_max = 130
 ax_ang_sens.set_ylim(y_min, y_max)
 ax_ang_sens.legend(loc='upper left')
 
@@ -94,9 +95,10 @@ line_force, = ax_force.plot([], [])
 ax_force.set_xlabel('Time (s)')
 ax_force.set_ylabel('Force (N)')
 ax_force.set_title('Force')
-ax_force.set_yticks([50 * 1 * i for i in range(6)])
+ax_force.grid(True)
+ax_force.set_yticks([50 * 1 * i for i in range(5)])
 y_min = 0
-y_max = 300
+y_max = 250
 ax_force.set_ylim(y_min, y_max)
 
 # Create a canvas to display the Matplotlib figure
@@ -111,9 +113,10 @@ line_stroke, = ax_stroke.plot([], [])
 ax_stroke.set_xlabel('Time (s)')
 ax_stroke.set_ylabel('Length (mm)')
 ax_stroke.set_title('Stroke')
-ax_stroke.set_yticks([0, 100, 200, 300, 400, 500, 600, 700, 800, 900 ,1000, 1100, 1200])
+ax_stroke.grid(True)
+ax_stroke.set_yticks([100 * 1 * i for i in range(9)])
 y_min = 0
-y_max = 1200
+y_max = 850
 ax_stroke.set_ylim(y_min, y_max)
 
 # Create a canvas to display the Matplotlib figure
@@ -126,11 +129,12 @@ fig_power = Figure(figsize=(6, 4), dpi=100)
 ax_power = fig_power.add_subplot(111)
 line_power, = ax_power.plot([], [])
 ax_power.set_xlabel('Time (s)')
-ax_power.set_ylabel('Power (kWatt)')
+ax_power.set_ylabel('Power (Watt)')
 ax_power.set_title('Power')
+ax_power.grid(True)
 #ax_power.set_yticks([0, 50, 100, 150, 200, 250, 300])
-y_min = -200
-y_max = 2000
+y_min = -1000
+y_max = 1000
 ax_power.set_ylim(y_min, y_max)
 
 # Create a canvas to display the Matplotlib figure
@@ -146,15 +150,19 @@ if BOOL_ENCODER:
 y_values_power = []
 y_values_force = []
 work = 0
+pressure = 0
+length_rod = 755 #mm
+start_ang = 55 #deg
+start_stroke = length_rod * math.cos(math.radians(start_ang))
 
 # Read data from CSV file
 def read_data():
-    global y_values_force, y_values_power, work
+    global y_values_force, y_values_power, work, pressure, length_rod, start_stroke
     if BOOL_ENCODER:
         data:list = encoder.get_data()
         if len(data) == 0:
             return
-
+        #data[0]["A0"] = 6.0
         DATA.append(data[0])
         
         x_values = [float(row["Time"]) for row in DATA]
@@ -162,14 +170,14 @@ def read_data():
         y_values_sensor_pressure = [float(row["A0"]) for row in DATA]
         line_ang_sens.set_xdata(x_values)
         line_ang_sens.set_ydata(y_values_sensor_ang)
-        line_pres_sens.set_xdata(x_values)
+        #line_pres_sens.set_xdata(x_values)
         # Convert bar to psi
-        line_pres_sens.set_ydata([14.5038 * float(row["A0"]) for row in DATA])
+        pressure = y_values_sensor_pressure[-1]
+        #line_pres_sens.set_ydata([14.5038 * float(row["A0"]) for row in DATA])
         
 
         ##### Stroke data #####
-        length_rod = 755 # mm
-        y_values_stroke = [2*length_rod * math.sin(math.radians(ang)) for ang in y_values_sensor_ang]
+        y_values_stroke = [(length_rod * math.cos(math.radians(ang)) * -1) + start_stroke for ang in y_values_sensor_ang]
         line_stroke.set_xdata(x_values)
         line_stroke.set_ydata(y_values_stroke)
 
@@ -190,6 +198,7 @@ def read_data():
             power = 0
         if math.isnan(work):
             work = 0
+
         y_values_power.append(power)
         line_power.set_xdata(x_values)
         line_power.set_ydata(y_values_power)
@@ -275,12 +284,13 @@ def export_ui():
     print("UI screenshot saved.")
 
 def update_power_label():
-    global work    
+    global work, pressure 
     # Update the label text
-    label_work.config(text=f'{str(work)} work')
+    #label_work.config(text=f'{str(work)} work')
+    label_work.config(text=f'{pressure} BAR')
     
     # Schedule the next update
-    root.after(1000, update_power_label)
+    root.after(UPDATE_INTERVAL, update_power_label)
 
 # Create a button widget
 button = tk.Button(master=root, text="Grab Screenshot", command=export_ui)

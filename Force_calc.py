@@ -80,16 +80,15 @@ def calc_power(theta, theta_prev, time, pressure, bBar):
         float: work in [Joules]
         float: power in [Watts]
     """
-
     power = 0.0
     work = 0.0
     theta2 = np.pi - np.deg2rad(theta)
     x = np.sqrt(L2**2 + L4**2 - 2*L2*L4*np.cos(theta2))
-
-    theta2_prev = 180 - theta_prev
+    
+    theta2_prev = np.pi - np.deg2rad(theta_prev)
     x_prev = np.sqrt(L2**2 + L4**2 - 2*L2*L4*np.cos(theta2_prev))
 
-    delta_x = x - x_prev
+    delta_x = x_prev - x
     f_p = calculate_piston_force(pressure, bBar)
     
     work = f_p * delta_x
