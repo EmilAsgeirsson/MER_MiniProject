@@ -5,8 +5,6 @@ from matplotlib.figure import Figure
 import csv
 from PIL import Image, ImageTk, ImageGrab, ImageDraw
 from time import sleep
-import sys
-import signal
 import math
 import atexit
 import Force_calc
@@ -20,6 +18,8 @@ from Encoder.scripts.encoder import Encoder
 # 3. Ensure BOOL_ENCODER is set to True
 # 4. Run the program
 
+# Note: You need to remove the USB in order to stop the thread running to the arduino
+
 ############################################
 
 
@@ -30,7 +30,7 @@ if BOOL_ENCODER:
     encoder = Encoder(port="COM4")
 
 # Define the update interval in milliseconds
-UPDATE_INTERVAL = 100
+UPDATE_INTERVAL = 200
 # data list
 DATA = []
 
@@ -43,8 +43,6 @@ def signal_handler():
         print("thread ended")    
         sleep(1)
     print('program ended')
-    #signal.signal(signal.SIGINT, signal.SIG_DFL)
-    #sys.exit(1)
 
 # Set up signal handler
 atexit.register(signal_handler)
@@ -68,7 +66,6 @@ canvas_topleft.place(x=0,y=0)
 # Load the image file using Pillow
 pil_image = Image.open("SDU_BLACK_RGB_png.png")
 resize = pil_image.resize([90,25])
-#827x221
 # Convert the PIL Image object to a Tkinter PhotoImage object
 tk_image = ImageTk.PhotoImage(resize)
 
@@ -83,7 +80,6 @@ canvas_logo.place(x=0,y=37)
 fig_ang_sens = Figure(figsize=(6, 4), dpi=100)
 ax_ang_sens = fig_ang_sens.add_subplot(111)
 line_ang_sens, = ax_ang_sens.plot([], [], label='Angle')
-#line_pres_sens, = ax_ang_sens.plot([], [], label='PSI')
 ax_ang_sens.set_xlabel('Time (s)')
 ax_ang_sens.set_ylabel('Angle (deg)')
 ax_ang_sens.set_title('Angle Sensor Data')
@@ -162,11 +158,10 @@ y_values_power = []
 y_values_force = []
 work = 0
 pressure = 0
-length_rod = 755 #mm
-start_ang = 55 #deg
+length_rod = 755 # mm
+start_ang = 55 # deg
 start_stroke = length_rod * math.cos(math.radians(start_ang))
 
-# Read data from CSV file
 def read_data():
     global y_values_force, y_values_power, work, pressure, length_rod, start_stroke
     if BOOL_ENCODER:
@@ -181,11 +176,9 @@ def read_data():
         y_values_sensor_pressure = [float(row["A0"]) for row in DATA]
         line_ang_sens.set_xdata(x_values)
         line_ang_sens.set_ydata(y_values_sensor_ang)
-        #line_pres_sens.set_xdata(x_values)
-        # Convert bar to psi
-        pressure = y_values_sensor_pressure[-1]
-        #line_pres_sens.set_ydata([14.5038 * float(row["A0"]) for row in DATA])
         
+        # Set global pressure variable
+        pressure = y_values_sensor_pressure[-1]
 
         ##### Stroke data #####
         y_values_stroke = [(length_rod * math.cos(math.radians(ang)) * -1) + start_stroke for ang in y_values_sensor_ang]
@@ -228,7 +221,7 @@ def read_data():
 
         ##### Stroke data #####
         length_rod = 755 # mm
-        y_values_stroke = [length_rod * math.sin(math.radians(float(row[1]))) for row in data]
+        y_values_stroke = [(length_rod * math.cos(math.radians(float(row[1]))) * -1) + start_stroke for row in data]
         line_stroke.set_xdata(x_values)
         line_stroke.set_ydata(y_values_stroke)
 
@@ -310,8 +303,6 @@ button.place(x=1, y=120)
 label_work = tk.Label(root, text="0 work")
 label_work.place(x=300, y=30)
 # Create a Label widget for the text
-#style = ttk.Style()
-#style.configure("TScale", troughrelief="flat", sliderrelief="flat", sliderthickness=20, troughcolor="lightgray", sliderlength=30)
 label = tk.Label(root, text="Use slider to adjust size of displayed data")
 label.place(x=600, y=30)
 # create a slider widget to adjust the point size
